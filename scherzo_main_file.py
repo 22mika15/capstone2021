@@ -1,7 +1,6 @@
 
 #Imports
 import os
-import turtle
 import time
 import random
 os.system("clear")
@@ -13,13 +12,6 @@ os.system("clear")
 #wn.setup(800, 600)
 #wn.tracer(0)
 
-#typing function
-def typing(text):
-  words = text
-  for char in words:
-    time.sleep(0.1)
-    print(char, end='', flush=True)
-    
 ##Create Pen
 #pen = turtle.Turtle()
 #pen.color("#00eb27")
@@ -29,46 +21,59 @@ def typing(text):
 #pen.hideturtle()
 #pen.write("Score: 200", move=False, align="center", font=("Courier New", 32, "normal"))
 
+#typing function
+def typing(text):
+  words = text
+  for char in words:
+    time.sleep(0.1)
+    print(char, end='', flush=True)
+
 
 #Define Classes
-#class Player():
-#    def __init__(self, lives, money, music_notes, weapon, armour):
-#        self.lives = 3
-#        self.money = 12
-#        self.music_notes = 0
-#        self.weapon = weapon
-#        self.armour = armour
+class Character():
+    def __init__(self, lives, money, weapon, armour):
+        self.lives = lives
+        self.money = money
+        self.weapon = weapon
+        self.armour = armour
 
-#class Enemy():
-#    def __init__(self, lives, weapon, armour):
-#        self.lives = 2
-#        self.weapon = weapon
-#        self.armour = armour
+class Player(Character):
+    def __init__(self, lives, money, weapon, armour, music_notes):
+        Character.__init__(self, lives, money, weapon, armour)
+        self.music_notes = music_notes
 
-#class Boss(Enemy):
-#    def __init__(self, lives, weapon, armour):
-#        Enemy.__init__(self, lives, weapon, armour)
-            
-#        self.lives = lives
-    #if music_notes > 5 boss_lives = 5
-    #if music_notes > 7 boss_lives = 3
-    #if music_notes > 10 boss_lives = 1
- #       self.money = money
- #       self.music_notes = music_notes
- #       self.weapon = weapon
- #       self.armour = armour
+class Enemy(Character):
+    def __init__(self, lives, money, weapon, armour, music_notes):
+        Character.__init__(self, lives, money, weapon, armour)
+        self.music_notes = music_notes
 
-#class Armour():
- #   def __init__(self, lives, music_notes):
- #       self.lives = lives
- #       self.music_notes = lives
+class Boss(Enemy):
+    def __init__(self, lives, money, weapon, armour, music_notes):
+        Enemy.__init__(self, lives, money, weapon, armour, music_notes):
+            Character.__init__(self, lives, money, weapon, armour)
+    #if player_music_notes > 5 boss_lives = 5
+    #if player_music_notes > 7 boss_lives = 3
+    #if player_music_notes > 10 boss_lives = 1
+    
 
-#class Weapon():
- #   def __init__(self, lives, music_notes):
- #       self.lives = lives
-  #      self.music_notes = music_notes
+class Armour():
+    def __init__(self, lives, music_notes):
+        self.lives = lives
+        self.music_notes = lives
+
+class Weapon():
+    def __init__(self, lives, music_notes):
+        self.lives = lives
+        self.music_notes = music_notes
+
+#MAKE A LIST OF WEAPONS AND A LIST OF ARMOUR
+#WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
         
-
+#Create Instances
+player = Player
+enemy = Enemy(3, 221, "from list", "from list")
+#have one enemy object, change armour, weapon (and therefore lives) in mainloop?
+boss = Boss("from player music notes", 1560, "from list", "from list")
 
 #Show Splash Screen
 print("\nSCHERZO")
@@ -76,15 +81,10 @@ print("Collect music notes to save the world from monsters.\n")
 time.sleep(3.5)
 os.system("clear")
 
-#Keyboard Bindings
-#wn.listen()
-#wn.onkeypress(select the option, "Enter")
-#wn.onkeypress(move left, "Left")
-#wn.onkeypress(move right, "Right")
+#Determine Successful Hit
+player_luck = random.randint(1,20)
+enemy_luck = random.randint(1,20)
 
-player_money = 12
-player_lives = 3
-player_music_notes = 0
 
 #Mainloop
 while True:
@@ -107,11 +107,22 @@ while True:
     if accept_contract == "yes" or accept_contract == "y":
         time.sleep(0.5)
         typing("\nYou accept the contract.")
-        #the battle stuff begins here
+        typing("\nYou enter a clearing, and approach the beast.")
+        typing("\n[description of enemy, I'm working on it]")
+                #the battle stuff begins here
+        attack_dodge = input("\nAttack or Dodge >> ").lower()
+        if attack_dodge == "a" or attack_dodge == "attack":
+            if player_luck > enemy_luck:
+                typing("\nsuccess")
+                enemy.lives -= 1
+            elif player_luck < enemy_luck:
+                typing("\nfail")
+                player.lives -= 1
+
     elif accept_contract == "no" or accept_contract == "n":
         time.sleep(0.5)
         typing("\nYou decided to leave the contract for someone else, and continue on.")
-        
+        s
         os.system("clear")
         typing("\nContinuing past the town, you approach a river that should be teaming with life.")
         typing("\nYou think you are alone, but notice an old woman leaning over the dirty water, further down the bank.") 
