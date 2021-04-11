@@ -5,6 +5,8 @@ import time
 import random
 os.system("clear")
 
+DELAY = 0.1
+
 #Window Setup
 #wn = turtle.Screen()
 #wn.title("SCHERZO")
@@ -21,12 +23,17 @@ os.system("clear")
 #pen.hideturtle()
 #pen.write("Score: 200", move=False, align="center", font=("Courier New", 32, "normal"))
 
-#typing function
+
+#0.0 for testing, 0.1 for gameplay
+DELAY = 0.0
+
+#Functions
 def typing(text):
   words = text
   for char in words:
-    time.sleep(0.1)
+    time.sleep(DELAY)
     print(char, end='', flush=True)
+    
 
 
 #Define Classes
@@ -38,19 +45,21 @@ class Character():
         self.armour = armour
 
 class Player(Character):
-    def __init__(self, lives, money, weapon, armour, music_notes):
+    def __init__(self, lives, money, weapon, armour, music_notes, player_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
+        self.player_luck = random.randint(1,20)
 
 class Enemy(Character):
-    def __init__(self, lives, money, weapon, armour, music_notes):
+    def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
+        self.enemy_luck = random.randint(1,20)
 
 class Boss(Enemy):
-    def __init__(self, lives, money, weapon, armour, music_notes):
-        Enemy.__init__(self, lives, money, weapon, armour, music_notes):
-            Character.__init__(self, lives, money, weapon, armour)
+    def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
+        Enemy.__init__(self, lives, money, weapon, armour, music_notes, enemy_luck)
+        Character.__init__(self, lives, money, weapon, armour)
     #if player_music_notes > 5 boss_lives = 5
     #if player_music_notes > 7 boss_lives = 3
     #if player_music_notes > 10 boss_lives = 1
@@ -70,20 +79,16 @@ class Weapon():
 #WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
         
 #Create Instances
-player = Player
-enemy = Enemy(3, 221, "from list", "from list")
+player = Player(3, 221, "from list", "from list", 3, 1)
+enemy = Enemy(3, 221, "from list", "from list", 3, 1)
 #have one enemy object, change armour, weapon (and therefore lives) in mainloop?
-boss = Boss("from player music notes", 1560, "from list", "from list")
+boss = Boss("from player music notes", 1560, "from list", "from list", 22, 1)
 
 #Show Splash Screen
 print("\nSCHERZO")
 print("Collect music notes to save the world from monsters.\n")
 time.sleep(3.5)
 os.system("clear")
-
-#Determine Successful Hit
-player_luck = random.randint(1,20)
-enemy_luck = random.randint(1,20)
 
 
 #Mainloop
@@ -112,9 +117,11 @@ while True:
                 #the battle stuff begins here
         attack_dodge = input("\nAttack or Dodge >> ").lower()
         if attack_dodge == "a" or attack_dodge == "attack":
-            if player_luck > enemy_luck:
+            if player.player_luck > enemy.enemy_luck:
                 typing("\nsuccess")
                 enemy.lives -= 1
+                if enemy.lives == 0:
+                    typing("\nYou defeated the villain")
             elif player_luck < enemy_luck:
                 typing("\nfail")
                 player.lives -= 1
