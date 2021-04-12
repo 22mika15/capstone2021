@@ -54,7 +54,7 @@ class Enemy(Character):
     def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
-        self.enemy_luck = random.randint(1,20)
+        self.enemy_luck = random.randint(1,20) #it asked for me to set a number in the instance, and I'm not sure if it overrides the random.randint
 
 class Boss(Enemy):
     def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
@@ -75,12 +75,15 @@ class Weapon():
         self.lives = lives
         self.music_notes = music_notes
 
+weapons = []
+armour = []
+
 #MAKE A LIST OF WEAPONS AND A LIST OF ARMOUR
 #WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
         
 #Create Instances
 player = Player(3, 221, "from list", "from list", 3, 1)
-enemy = Enemy(3, 221, "from list", "from list", 3, 1)
+enemy = Enemy(3, 400, "from list", "from list", 3, 1)
 #have one enemy object, change armour, weapon (and therefore lives) in mainloop?
 boss = Boss("from player music notes", 1560, "from list", "from list", 22, 1)
 
@@ -107,8 +110,8 @@ while True:
     typing("\nThe reward is 400 Coda, enough for repairs to all of your gear, but not a place to rest in safety.")
     
     time.sleep(0.5)
-    accept_contract = input("\nDo you want to take the contract? Yes / No >> ").lower()
     
+    accept_contract = input("\nDo you want to take the contract? Yes / No >> ").lower()
     if accept_contract == "yes" or accept_contract == "y":
         time.sleep(0.5)
         typing("\nYou accept the contract.")
@@ -120,12 +123,28 @@ while True:
             if player.player_luck > enemy.enemy_luck:
                 typing("\nsuccess")
                 enemy.lives -= 1
+                player.music_notes += enemy.music_notes
                 if enemy.lives == 0:
                     typing("\nYou defeated the villain")
-            elif player_luck < enemy_luck:
+                    typing("\nYou return to the village, trophy in hand. You approach the owner of the contract")
+                    typing(f"\nThe owner thanks you, and hands you {enemy.money} coda, and points you towards a merchant")
+                    player.money += enemy.money
+                    
+                elif enemy.lives > 0:
+                    pass
+                    #repeat back to attack or dodge
+                    
+            elif player.player_luck < enemy.enemy_luck:
                 typing("\nfail")
                 player.lives -= 1
-
+                if player.lives == 0:
+                    typing("\nYou did not defeat the villain")
+                    typing("\nYou continue on to the next village, hungry and tired. The world grows colder and darker, and there is grey in the skies.")
+                    continue
+                elif player.lives > 0:
+                    pass
+                    #repeat back to attack or dodge
+        
     elif accept_contract == "no" or accept_contract == "n":
         time.sleep(0.5)
         typing("\nYou decided to leave the contract for someone else, and continue on.")
