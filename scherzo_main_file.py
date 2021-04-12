@@ -7,21 +7,12 @@ os.system("clear")
 
 DELAY = 0.1
 
-#Window Setup
-#wn = turtle.Screen()
-#wn.title("SCHERZO")
-#wn.bgcolor("#227570")
-#wn.setup(800, 600)
-#wn.tracer(0)
+weapons = ["weapon1", "weapon2", "weapon3", "weapon4"]
+armour = ["armour1", "armour2", "armour3", "armour4"]
+potions = ["armour1", "armour2", "armour3", "armour4"]
 
-##Create Pen
-#pen = turtle.Turtle()
-#pen.color("#00eb27")
-#pen.speed(0)
-#pen.penup()
-#pen.goto(0, 250)
-#pen.hideturtle()
-#pen.write("Score: 200", move=False, align="center", font=("Courier New", 32, "normal"))
+#MAKE A LIST OF WEAPONS AND A LIST OF ARMOUR
+#WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
 
 
 #0.0 for testing, 0.1 for gameplay
@@ -74,12 +65,6 @@ class Weapon():
     def __init__(self, lives, music_notes):
         self.lives = lives
         self.music_notes = music_notes
-
-weapons = []
-armour = []
-
-#MAKE A LIST OF WEAPONS AND A LIST OF ARMOUR
-#WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
         
 #Create Instances
 player = Player(3, 221, "from list", "from list", 3, 1)
@@ -129,9 +114,24 @@ while True:
                     typing("\nYou return to the village, trophy in hand. You approach the owner of the contract")
                     typing(f"\nThe owner thanks you, and hands you {enemy.money} coda, and points you towards a merchant")
                     player.money += enemy.money
-                    
+                    typing("\nYou approach the merchant, who is selling armour, weapons, and potions")
+                    buy_armour = input("\nDo you want to purchase armour? Yes / No >> ").lower()
+                    if buy_armour == "yes" or buy_armour == "y":
+                        print(f"{armour}")
+                    elif buy_armour == "no" or buy_armour == "n":
+                        pass
+                    buy_weapon = input("\nDo you want to purchase a weapon? Yes / No >> ").lower()
+                    if buy_weapon == "yes" or buy_weapon == "y":
+                        print(f"{weapons}")
+                    elif buy_weapon == "no" or buy_weapon == "n":
+                        pass
+                    buy_potion = input("\nDo you want to purchase a potion? Yes / No >> ").lower()
+                    if buy_potion == "yes" or buy_potion == "y":
+                        print(f"{potions}")
+                    elif buy_potion == "no" or buy_potion == "n":
+                        continue                    
                 elif enemy.lives > 0:
-                    pass
+                    pass5
                     #repeat back to attack or dodge
                     
             elif player.player_luck < enemy.enemy_luck:
@@ -148,7 +148,7 @@ while True:
     elif accept_contract == "no" or accept_contract == "n":
         time.sleep(0.5)
         typing("\nYou decided to leave the contract for someone else, and continue on.")
-        s
+        
         os.system("clear")
         typing("\nContinuing past the town, you approach a river that should be teaming with life.")
         typing("\nYou think you are alone, but notice an old woman leaning over the dirty water, further down the bank.") 
