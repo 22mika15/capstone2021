@@ -7,12 +7,13 @@ os.system("clear")
 
 DELAY = 0.1
 
-weapons = ["weapon1", "weapon2", "weapon3", "weapon4"]
-armour = ["armour1", "armour2", "armour3", "armour4"]
-potions = ["armour1", "armour2", "armour3", "armour4"]
+#put in dictionary so I can print out what each weapon has as bonuses?
+weapons = ["", "weapon1", "weapon2", "weapon3", "weapon4"]
+armours = ["", "armour1", "armour2", "armour3", "armour4"]
+potions = ["", "armour1", "armour2", "armour3", "armour4"]
 
-#MAKE A LIST OF WEAPONS AND A LIST OF ARMOUR
 #WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
+#ADD THE OLD WEAPON/ARMOUR BACK
 
 
 #0.0 for testing, 0.1 for gameplay
@@ -25,7 +26,57 @@ def typing(text):
     time.sleep(DELAY)
     print(char, end='', flush=True)
     
-
+def player_win():
+    typing("\nYou defeated the villain")
+    typing("\nYou return to the village, trophy in hand. You approach the owner of the contract")
+    typing(f"\nThe owner thanks you, and hands you {enemy.money} coda, and points you towards a merchant")
+    player.money += enemy.money
+    typing("\nYou approach the merchant, who is selling armour, weapons, and potions")
+    buy_armour = input("\nDo you want to purchase armour? Yes / No >> ").lower()
+    if buy_armour == "yes" or buy_armour == "y":
+        for armour in armours:
+            print(f"{armours.index(armour)}: {armour}")
+        new_weapon = input("Which do you want to purchase? Enter the number >> ")
+        if new_weapon == "1":
+            enemy.lives -= 2
+            enemy.music_notes -=3
+            enemy.money += 15
+        elif new_weapon == "2":
+            enemy.lives -=4
+            enemy.music_notes = 0
+            enemy.money += 11
+        elif new_weapon == "3":
+            enemy.lives -=1
+            print("Weapon strength +1")
+            enemy.music_notes += 4
+            print("Music bonus +4")
+            enemy.money +=20
+            print("Money bonus +20")
+        elif new_weapon == "4":
+            enemy.lives += 1
+            enemy.music_notes += 8
+            enemy.money += 10
+        else:
+            typing("'Ok, thanks'")
+        
+    elif buy_armour == "no" or buy_armour == "n":
+        typing("'Ok, thanks'")
+   
+    buy_weapon = input("\nDo you want to purchase a weapon? Yes / No >> ").lower()
+    if buy_weapon == "yes" or buy_weapon == "y":
+        for weapon in weapons:
+            print(f"{weapons.index(weapon)}: {weapon}")
+        new_weapon = input("Which do you want to purchase? Enter the number >> ")
+    elif buy_weapon == "no" or buy_weapon == "n":
+        typing("'No problem'")
+   
+    buy_potion = input("\nDo you want to purchase a potion? Yes / No >> ").lower()
+    if buy_potion == "yes" or buy_potion == "y":
+        for potion in potions:
+            print(f"{potions.index(potion)}: {potion}")
+        new_weapon = input("Which do you want to purchase? Enter the number >> ")
+    elif buy_potion == "no" or buy_potion == "n":
+        typing("'Thanks for your time'")
 
 #Define Classes
 class Character():
@@ -39,13 +90,13 @@ class Player(Character):
     def __init__(self, lives, money, weapon, armour, music_notes, player_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
-        self.player_luck = random.randint(1,20)
+        self.player_luck = 3 #random.randint(1,20)
 
 class Enemy(Character):
     def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
-        self.enemy_luck = random.randint(1,20) #it asked for me to set a number in the instance, and I'm not sure if it overrides the random.randint
+        self.enemy_luck = 2 #random.randint(1,20) #it asked for me to set a number in the instance, and I'm not sure if it overrides the random.randint
 
 class Boss(Enemy):
     def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
@@ -68,7 +119,7 @@ class Weapon():
         
 #Create Instances
 player = Player(3, 221, "from list", "from list", 3, 1)
-enemy = Enemy(3, 400, "from list", "from list", 3, 1)
+enemy = Enemy(1, 400, "from list", "from list", 3, 1)
 #have one enemy object, change armour, weapon (and therefore lives) in mainloop?
 boss = Boss("from player music notes", 1560, "from list", "from list", 22, 1)
 
@@ -92,7 +143,7 @@ while True:
     
     typing("\nYou approach the town, cautiously.")
     typing("\nThere is a notice on the town board - a monster, terrifying and dark as a winter blizzard.")
-    typing("\nThe reward is 400 Coda, enough for repairs to all of your gear, but not a place to rest in safety.")
+    typing("\nThe reward is 400 coda, enough for repairs to all of your gear, but not a place to rest in safety.")
     
     time.sleep(0.5)
     
@@ -110,28 +161,8 @@ while True:
                 enemy.lives -= 1
                 player.music_notes += enemy.music_notes
                 if enemy.lives == 0:
-                    typing("\nYou defeated the villain")
-                    typing("\nYou return to the village, trophy in hand. You approach the owner of the contract")
-                    typing(f"\nThe owner thanks you, and hands you {enemy.money} coda, and points you towards a merchant")
-                    player.money += enemy.money
-                    typing("\nYou approach the merchant, who is selling armour, weapons, and potions")
-                    buy_armour = input("\nDo you want to purchase armour? Yes / No >> ").lower()
-                    if buy_armour == "yes" or buy_armour == "y":
-                        print(f"{armour}")
-                    elif buy_armour == "no" or buy_armour == "n":
-                        pass
-                    buy_weapon = input("\nDo you want to purchase a weapon? Yes / No >> ").lower()
-                    if buy_weapon == "yes" or buy_weapon == "y":
-                        print(f"{weapons}")
-                    elif buy_weapon == "no" or buy_weapon == "n":
-                        pass
-                    buy_potion = input("\nDo you want to purchase a potion? Yes / No >> ").lower()
-                    if buy_potion == "yes" or buy_potion == "y":
-                        print(f"{potions}")
-                    elif buy_potion == "no" or buy_potion == "n":
-                        continue                    
-                elif enemy.lives > 0:
-                    pass5
+                    player_win()
+                    continue
                     #repeat back to attack or dodge
                     
             elif player.player_luck < enemy.enemy_luck:
@@ -144,7 +175,23 @@ while True:
                 elif player.lives > 0:
                     pass
                     #repeat back to attack or dodge
-        
+        if attack_dodge == "d" or attack_dodge == "dodge":
+            if player.player_luck > enemy.enemy_luck:
+                typing("\nyou dodge the monster's attack")
+                    #repeat back to attack or dodge
+
+            elif player.player_luck < enemy.enemy_luck:
+                typing("\nyou try to dodge, but the monster's claw catches you")
+                player.music_notes -= 2
+                player.lives -=1
+                if player.lives == 0:
+                    typing("\nYou did not defeat the villain")
+                    typing("\nYou continue on to the next village, hungry and tired. The world grows colder and darker, and there is grey in the skies.")
+                    continue
+                elif player.lives > 0:
+                    #repeat back to attack or dodge
+                    pass
+
     elif accept_contract == "no" or accept_contract == "n":
         time.sleep(0.5)
         typing("\nYou decided to leave the contract for someone else, and continue on.")
