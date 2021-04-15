@@ -10,10 +10,23 @@ DELAY = 0.1
 #put in dictionary so I can print out what each weapon has as bonuses?
 weapons = ["", "weapon1", "weapon2", "weapon3", "weapon4"]
 armours = ["", "armour1", "armour2", "armour3", "armour4"]
-potions = ["", "armour1", "armour2", "armour3", "armour4"]
 
 #WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
 #ADD THE OLD WEAPON/ARMOUR BACK
+
+
+#(If i get these working I'm pretty sure I should have the bulk of the game code, and just have to code the boss, and the narrative)
+#FIGHT FUNCTION
+#holds code for attack/dodge, similar to track and field code
+#WIN FUNCTION
+#holds code for purchasing weapons and armour
+#RIDDLE FUNCTION
+#holds code for riddles, similar to guessing game
+
+#narrative
+#do you want to take the contract y/n
+#if y, fight() >>> if enemy lives == 0, win() >>> narrative
+#if n, riddle() >>> if guesses >= 5, music_notes += number >>> narrative
 
 
 #0.0 for testing, 0.1 for gameplay
@@ -26,6 +39,7 @@ def typing(text):
     time.sleep(DELAY)
     print(char, end='', flush=True)
     
+#haven't finished all the sales code yet    
 def player_win():
     typing("\nYou defeated the villain")
     typing("\nYou return to the village, trophy in hand. You approach the owner of the contract")
@@ -36,26 +50,31 @@ def player_win():
     if buy_armour == "yes" or buy_armour == "y":
         for armour in armours:
             print(f"{armours.index(armour)}: {armour}")
-        new_weapon = input("Which do you want to purchase? Enter the number >> ")
-        if new_weapon == "1":
-            enemy.lives -= 2
-            enemy.music_notes -=3
+        new_armour = input("Which do you want to purchase? Enter the number (1-4) >> ")
+        if new_armour == "1":
+            player.lives += 2
             enemy.money += 15
-        elif new_weapon == "2":
-            enemy.lives -=4
-            enemy.music_notes = 0
-            enemy.money += 11
-        elif new_weapon == "3":
-            enemy.lives -=1
-            print("Weapon strength +1")
-            enemy.music_notes += 4
-            print("Music bonus +4")
-            enemy.money +=20
-            print("Money bonus +20")
-        elif new_weapon == "4":
-            enemy.lives += 1
-            enemy.music_notes += 8
-            enemy.money += 10
+            player.money -= 78
+            typing(f"Lives: {player.lives}")
+            typing(f"Money: {player.money}")
+        elif new_armour == "2":
+            player.lives += 3
+            enemy.money += 5
+            player.money -= 73
+            typing(f"Lives: {player.lives}")
+            typing(f"Money: {player.money}")
+        elif new_armour == "3":
+            player.lives += 2
+            enemy.money += 15
+            player.money -= 59
+            typing(f"Lives: {player.lives}")
+            typing(f"Money: {player.money}")
+        elif new_armour == "4":
+            player.lives += 1
+            enemy.money += 22
+            player.money -= 78
+            typing(f"Lives: {player.lives}")
+            typing(f"Money: {player.money}")
         else:
             typing("'Ok, thanks'")
         
@@ -66,18 +85,50 @@ def player_win():
     if buy_weapon == "yes" or buy_weapon == "y":
         for weapon in weapons:
             print(f"{weapons.index(weapon)}: {weapon}")
+        for armour in armours:
+            print(f"{armours.index(armour)}: {armour}")
+        new_weapon = input("Which do you want to purchase? Enter the number >> ")
+        if new_weapon == "1":
+            enemy.lives -= 2
+            enemy.music_notes -=3
+            enemy.money += 15
+            player.money -= 82
+            typing("Weapon strength +2")
+            typing("Music Bonus +3")
+            typing("Money Bonus +15")
+            typing(f"Your Coda: {player.money}")
+        elif new_weapon == "2":
+            enemy.lives -=4
+            enemy.music_notes = 0
+            enemy.money += 11
+            player.money -= 82
+            typing("Weapon strength +4")
+            typing("Money Bonus +15")
+            typing(f"Your Coda: {player.money}")
+        elif new_weapon == "3":
+            enemy.lives -=1
+            enemy.music_notes += 4
+            enemy.money +=20
+            player.money -= 82
+            typing("Weapon strength +2")
+            typing("Music Bonus +3")
+            typing("Money Bonus +15")
+            typing(f"Your Coda: {player.money}")
+        elif new_weapon == "4":
+            enemy.lives += 1
+            enemy.music_notes += 8
+            enemy.money += 10
+            player.money -= 82
+            typing("Weapon strength +2")
+            typing("Music Bonus +3")
+            typing("Money Bonus +15")
+            typing(f"Your Coda: {player.money}")
+        else:
+            typing("'Ok, thanks'")
         new_weapon = input("Which do you want to purchase? Enter the number >> ")
     elif buy_weapon == "no" or buy_weapon == "n":
         typing("'No problem'")
    
-    buy_potion = input("\nDo you want to purchase a potion? Yes / No >> ").lower()
-    if buy_potion == "yes" or buy_potion == "y":
-        for potion in potions:
-            print(f"{potions.index(potion)}: {potion}")
-        new_weapon = input("Which do you want to purchase? Enter the number >> ")
-    elif buy_potion == "no" or buy_potion == "n":
-        typing("'Thanks for your time'")
-
 #Define Classes
 class Character():
     def __init__(self, lives, money, weapon, armour):
@@ -204,5 +255,21 @@ while True:
         typing("\n'Hello, young warrior-' the crashing sounds of thousands of lives and death trickle through her voice. 'I have a game for you.'")
         time.sleep(0.5)
         #guessing game starts here
+    
+    os.system("clear")
+    typing("The air smells of rotting fish, and the sounds of scavanging birds and angry voices dirty the air.")
+    typing("What should be a peaceful fishing village is overcome with pollution.")
+    typing("As you explore the market, a man dressed in seawares approaches you suddenly.")
+    typing("'I've a pro'osition for ye, Scherzo. Ye kill mo'sters, do ye not?'")
+    typing("'Got some Gillers down in me well. Help me out?'")    
+    accept_contract = input("\nDo you want to take the contract? Yes / No >> ").lower()
+    if accept_contract == "yes" or accept_contract == "y":
+        typing("'Aye, thank ye Scherzo. I'll lead ye to the place.'")
+        os.system("clear")
+        typing("You jump into the well, and you can hear the deep sounds of Gillers below the icy waters")
+        typing("Swiftly, you climb onto a small ledge, ready for the attack")
+        #fight()
+            
+    
         
 
