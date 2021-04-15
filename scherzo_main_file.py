@@ -38,6 +38,32 @@ def typing(text):
   for char in words:
     time.sleep(DELAY)
     print(char, end='', flush=True)
+
+def fight():
+    pass
+    
+def win():
+    pass
+
+def riddle():
+    pass
+    
+    
+#while True:
+#narrative
+#if accept_contract == "y":
+fight()
+#if enemy.enemy_lives == 0:
+win()
+#narrative
+#if accept_contract == "n"
+riddle()
+#narrative
+    
+    
+    
+    
+    
     
 #haven't finished all the sales code yet    
 def player_win():
