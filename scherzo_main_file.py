@@ -5,21 +5,8 @@ import time
 import random
 os.system("clear")
 
-DELAY = 0.1
-
-#put in dictionary so I can print out what each weapon has as bonuses?
-weapons = ["", "weapon1", "weapon2", "weapon3", "weapon4"]
-armours = ["", "armour1", "armour2", "armour3", "armour4"]
-#weapons = {weapon1: ["strength +2", "money bonus +15", "price: 78 coda"], }
-
 #WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
 #ADD THE OLD WEAPON/ARMOUR BACK
-
-
-#narrative
-#do you want to take the contract y/n
-#if y, fight() >>> if enemy lives == 0, win() >>> narrative
-#if n, riddle() >>> if guesses >= 5, music_notes += number >>> narrative
 
 
 #0.0 for testing, 0.1 for gameplay
@@ -39,13 +26,13 @@ class Player(Character):
     def __init__(self, lives, money, weapon, armour, music_notes, player_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
-        self.player_luck = random.randint(2,20)
+        self.player_luck = player_luck
 
 class Enemy(Character):
     def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
-        self.enemy_luck = random.randint(1,20) #it asked for me to set a number in the instance, and I'm not sure if it overrides the random.randint
+        self.enemy_luck = enemy_luck
 
 class Boss(Enemy):
     def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
@@ -57,18 +44,39 @@ class Boss(Enemy):
     
 
 class Armour():
-    def __init__(self, lives, music_notes):
-        self.lives = lives
-        self.music_notes = lives
+    def __init__(self, name, strength, coda, cost ):
+        self.name = name
+        self.strength = strength
+        self.coda = coda
+        self.cost = cost
 
 class Weapon():
-    def __init__(self, lives, music_notes):
-        self.lives = lives
-        self.music_notes = music_notes
+    def __init__(self, name, strength, music_bonus, coda, cost ):
+        self.name = name
+        self.strength = strength
+        self.music_bonus = music_bonus
+        self.coda = coda
+        self.cost = cost
+
+
+sword = Weapon("Sword", 2, 3, 15, 82)
+spear = Weapon("Spear", 4, 0, 11, 76)
+axe = Weapon("Axe", 1, 4, 20, 80)
+mace = Weapon("Mace", 1, 8, 10, 63)
+
+light = Armour("light", 2, 15, 78)
+medium = Armour("Medium", 3, 5, 75)
+heavy = Armour("Heavy", 2, 15, 59)
+dark = Armour("Dark", 1, 22, 78)
+
+#put in dictionary so I can print out what each weapon has as bonuses?
+weapons = [sword, spear, axe, mace]
+armours = [light, medium, heavy, dark]
         
 #Create Instances
-player = Player(3, 221, "from list", "from list", 3, 1)
-enemy = Enemy(2, 400, "from list", "from list", 3, 1)
+player = Player(3, 221, "from list", "from list", 3, 3)#random.randint(3,20)
+enemy = Enemy(2, 400, "from list", "from list", 3, 2)#random.randint(1,15)
+
 #have one enemy object, change armour, weapon (and therefore lives) in mainloop?
 boss = Boss("from player music notes", 1560, "from list", "from list", 22, 1)
 
@@ -86,18 +94,22 @@ def typing(text):
 #working
 def fight():
     while enemy.lives > 0 and player.lives > 0: 
+        print(f"Enemy lives: {enemy.lives}")
+        print(f"Player lives: {player.lives}")
         attack_dodge = input("\nAttack or Dodge >> ").lower()
         if attack_dodge == "a" or attack_dodge == "attack":
             if player.player_luck > enemy.enemy_luck:
-                typing("\nsuccess")
                 enemy.lives -= 1
+
                 if enemy.lives == 0:
+                    os.system("clear")
                     win()
                     
             elif player.player_luck < enemy.enemy_luck:
-                typing("\nfail")
                 player.lives -= 1
+                
                 if player.lives == 0:
+                    os.system("clear")
                     lose()
                     return 0
 
@@ -109,7 +121,9 @@ def fight():
                 typing("\nyou try to dodge, but the monster's attack lands")
                 player.music_notes -= 2
                 player.lives -=1
+                
                 if player.lives == 0:
+                    os.system("clear")
                     lose()
                     return 0
 
@@ -118,7 +132,7 @@ def lose():
     typing("\nYou did not defeat your enemy")
     typing("\nYou continue on to the next village, hungry and tired. The world grows colder and darker, and there is grey in the skies.")
                     
-#working I'm pretty sure    
+#working (not nice-looking output, but working)   
 def win():
     typing("\nYou defeated the villain")
     typing("\nYou return to the village, trophy in hand. You approach your employer.")
@@ -128,94 +142,63 @@ def win():
     buy_armour = input("\nDo you want to purchase armour? Yes / No >> ").lower()
     if buy_armour == "yes" or buy_armour == "y":
         for armour in armours:
-            print(f"{armours.index(armour)}: {armour}")
-        new_armour = input("Which do you want to purchase? Enter the number (1-4) >> ")
-        if new_armour == "1":
-            player.lives += 2
-            enemy.money += 15
-            player.money -= 78
-            typing(f"Lives: {player.lives}")
-            typing(f"Money: {player.money}")
-        elif new_armour == "2":
-            player.lives += 3
-            enemy.money += 5
-            player.money -= 73
-            typing(f"Lives: {player.lives}")
-            typing(f"Money: {player.money}")
-        elif new_armour == "3":
-            player.lives += 2
-            enemy.money += 15
-            player.money -= 59
-            typing(f"Lives: {player.lives}")
-            typing(f"Money: {player.money}")
-        elif new_armour == "4":
-            player.lives += 1
-            enemy.money += 22
-            player.money -= 78
-            typing(f"Lives: {player.lives}")
-            typing(f"Money: {player.money}")
-        else:
-            typing("'Ok, thanks'")
+            print(f"{armours.index(armour)+1}: {armour.name}")
+        armour_index = input(f"Which do you want to purchase? Enter the number (1-{len(armours)}) >> ")
+        armour_index = int(armour_index)
+        armour = armours[armour_index]
+        player.lives += armour.strength
+        enemy.money += armour.coda
+        player.money -= armour.cost
+        typing(f"Weapon strength: {armour.strength}")
+        typing(f"Money Bonus {armour.coda}")
+        typing(f"Your Coda: {player.money}")
 
     buy_weapon = input("\nDo you want to purchase a weapon? Yes / No >> ").lower()
     if buy_weapon == "yes" or buy_weapon == "y":
         for weapon in weapons:
-            print(f"{weapons.index(weapon)}: {weapon}")
-        new_weapon = input("Which do you want to purchase? Enter the number (1-4) >> ")
-        if new_weapon == "1":
-            enemy.lives -= 2
-            enemy.music_notes -=3
-            enemy.money += 15
-            player.money -= 82
-            typing("Weapon strength +2")
-            typing("Music Bonus +3")
-            typing("Money Bonus +15")
-            typing(f"Your Coda: {player.money}")
-        elif new_weapon == "2":
-            enemy.lives -=4
-            enemy.music_notes = 0
-            enemy.money += 11
-            player.money -= 82
-            typing("Weapon strength +4")
-            typing("Money Bonus +15")
-            typing(f"Your Coda: {player.money}")
-        elif new_weapon == "3":
-            enemy.lives -=1
-            enemy.music_notes += 4
-            enemy.money +=20
-            player.money -= 82
-            typing("Weapon strength +2")
-            typing("Music Bonus +3")
-            typing("Money Bonus +15")
-            typing(f"Your Coda: {player.money}")
-        elif new_weapon == "4":
-            enemy.lives += 1
-            enemy.music_notes += 8
-            enemy.money += 10
-            player.money -= 82
-            typing("Weapon strength +2")
-            typing("Music Bonus +3")
-            typing("Money Bonus +15")
-            typing(f"Your Coda: {player.money}")
-        else:
-            typing("'Ok, thanks'")
+            print(f"{weapons.index(weapon)+1}: {weapon.name}")
+        weapon_index = input(f"Which do you want to purchase? Enter the number (1-{len(weapons)}) >> ")
+        weapon_index = int(weapon_index)
+        weapon = weapons[weapon_index]
+        enemy.lives -= weapon.strength
+        enemy.music_notes -= weapon.music_bonus
+        enemy.money += weapon.coda
+        player.money -= weapon.cost
+        typing(f"Weapon strength: {weapon.strength}")
+        typing(f"Music Bonus: {weapon.music_bonus}")
+        typing(f"Money Bonus {weapon.coda}")
+        typing(f"Your Coda: {player.money}")
             
             
     elif buy_weapon == "no" or buy_weapon == "n":
         typing("'No problem'")
-        
+
+#almost there        
 def riddle():
-    pass
-    
-    
-#while True:
-#narrative
-#if accept_contract == "y":
-fight()
-#if enemy.enemy_lives == 0:
-win()
-#narrative
-#if accept_contract == "n"
+    #There are as many constellations in the sky as there are keys in a piano. What number am I?
+    #A: 88
+    #Which musical instrument will never tell the truth?
+    #A: A lyre
+
+    typing("'To learn more music you must answer me this...'")
+    typing("""I have a scroll but without any quill.)
+    I have ribs and a neck but no legs.
+    I have a saddle but there's no horse.
+    I have a bridge but with no sign of water.""")
+    guesses = 5
+    while guesses > 0:
+        answer =5 input("What am I? >> ").lower()
+        if answer == "a violin" or answer == "violin":
+            typing("'Well done, young warrior.'")
+            typing("The witch disappears in a flash of liquid, smokey gold.")
+            player.music_notes += guesses
+            typing(f"You notice that you have {guesses} new music notes")
+        else:
+            typing("'Not quite, Child.")
+            guesses -= 1
+            
+
+
 riddle()
 #narrative
 
@@ -262,7 +245,8 @@ while True:
         typing("\nThe old woman looks up at you. Her eyes are black and furious, far too ancient to belong to a mortal human.")
         typing("\n'Hello, young warrior-' the crashing sounds of thousands of lives and death trickle through her voice. 'I have a game for you.'")
         time.sleep(0.5)
-        #riddle()
+        
+        riddle()
     
     os.system("clear")
     typing("The air smells of rotting fish, and the sounds of scavanging birds and angry voices dirty the air.")
