@@ -38,9 +38,6 @@ class Boss(Enemy):
     def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
         Enemy.__init__(self, lives, money, weapon, armour, music_notes, enemy_luck)
         Character.__init__(self, lives, money, weapon, armour)
-    #if player_music_notes > 5 boss_lives = 5
-    #if player_music_notes > 7 boss_lives = 3
-    #if player_music_notes > 10 boss_lives = 1
     
 
 class Armour():
@@ -69,7 +66,6 @@ medium = Armour("Medium", 3, 5, 75)
 heavy = Armour("Heavy", 2, 15, 59)
 dark = Armour("Dark", 1, 22, 78)
 
-#put in dictionary so I can print out what each weapon has as bonuses?
 weapons = [sword, spear, axe, mace]
 armours = [light, medium, heavy, dark]
         
@@ -79,7 +75,6 @@ enemy = Enemy(2, 400, "from list", "from list", 3, 2)#random.randint(1,15)
 
 #have one enemy object, change armour, weapon (and therefore lives) in mainloop?
 boss = Boss("from player music notes", 1560, "from list", "from list", 22, 1)
-
 
 
 
@@ -93,7 +88,8 @@ def typing(text):
 
 #working
 def fight():
-    while enemy.lives > 0 and player.lives > 0: 
+    while enemy.lives > 0 and player.lives > 0:
+        os.system("afplay battle_music.mp3&") 
         print(f"Enemy lives: {enemy.lives}")
         print(f"Player lives: {player.lives}")
         attack_dodge = input("\nAttack or Dodge >> ").lower()
@@ -102,6 +98,7 @@ def fight():
                 enemy.lives -= 1
 
                 if enemy.lives == 0:
+                    os.system("afplay win.wav&")
                     os.system("clear")
                     win()
                     
@@ -110,6 +107,7 @@ def fight():
                 
                 if player.lives == 0:
                     os.system("clear")
+                    os.system("afplay death.wav&")
                     lose()
                     return 0
 
@@ -124,15 +122,17 @@ def fight():
                 
                 if player.lives == 0:
                     os.system("clear")
+                    os.system("afplay death.wav&")
                     lose()
                     return 0
 
 #working
 def lose():
+    
     typing("\nYou did not defeat your enemy")
     typing("\nYou continue on to the next village, hungry and tired. The world grows colder and darker, and there is grey in the skies.")
                     
-#working (not nice-looking output, but working)   
+#working --- I think that I need to use set/get in my classes to += lives etc.
 def win():
     typing("\nYou defeated the villain")
     typing("\nYou return to the village, trophy in hand. You approach your employer.")
@@ -141,128 +141,177 @@ def win():
     typing("\nYou approach the merchant, who is selling armour and weapons.")
     buy_armour = input("\nDo you want to purchase armour? Yes / No >> ").lower()
     if buy_armour == "yes" or buy_armour == "y":
+        os.system("clear")
         for armour in armours:
-            print(f"{armours.index(armour)+1}: {armour.name}")
-        armour_index = input(f"Which do you want to purchase? Enter the number (1-{len(armours)}) >> ")
-        armour_index = int(armour_index)
+            print(f"\n{armours.index(armour)+1}) {armour.name}")
+            print(f"Strength: {armour.strength}")
+            print(f"Money Bonus: {armour.coda}")
+            print(f"Cost: {armour.cost}")
+        armour_index = input(f"\nWhich do you want to purchase? Enter the number (1-{len(armours)}) >> ")
+        os.system("afplay select.wav&")
+        armour_index = int(armour_index) - 1
         armour = armours[armour_index]
         player.lives += armour.strength
         enemy.money += armour.coda
         player.money -= armour.cost
-        typing(f"Weapon strength: {armour.strength}")
-        typing(f"Money Bonus {armour.coda}")
-        typing(f"Your Coda: {player.money}")
+        os.system("clear")
+        typing(f"\nArmour strength: {armour.strength}")
+        typing(f"\nMoney Bonus: {armour.coda}")
+        typing(f"\nYour Coda: {player.money}")
 
     buy_weapon = input("\nDo you want to purchase a weapon? Yes / No >> ").lower()
     if buy_weapon == "yes" or buy_weapon == "y":
+        os.system("clear")
         for weapon in weapons:
-            print(f"{weapons.index(weapon)+1}: {weapon.name}")
-        weapon_index = input(f"Which do you want to purchase? Enter the number (1-{len(weapons)}) >> ")
+            print(f"\n{weapons.index(weapon)+1}) {weapon.name}")
+            print(f"Strength: {weapon.strength}")
+            print(f"Money Bonus: {weapon.music_bonus}")
+            print(f"Coda: {weapon.coda}")
+            print(f"Cost: {weapon.cost}")
+        weapon_index = input(f"\nWhich do you want to purchase? Enter the number (1-{len(weapons)}) >> ")
+        os.system("afplay select.wav&")
         weapon_index = int(weapon_index)
         weapon = weapons[weapon_index]
         enemy.lives -= weapon.strength
         enemy.music_notes -= weapon.music_bonus
         enemy.money += weapon.coda
         player.money -= weapon.cost
-        typing(f"Weapon strength: {weapon.strength}")
-        typing(f"Music Bonus: {weapon.music_bonus}")
-        typing(f"Money Bonus {weapon.coda}")
-        typing(f"Your Coda: {player.money}")
+        os.system("clear")
+        typing(f"\nWeapon strength: {weapon.strength}")
+        typing(f"\nMusic Bonus: {weapon.music_bonus}")
+        typing(f"\nMoney Bonus {weapon.coda}")
+        typing(f"\nYour Coda: {player.money}")
             
             
     elif buy_weapon == "no" or buy_weapon == "n":
         typing("'No problem'")
 
-#almost there        
+#is the random working
 def riddle():
-    #There are as many constellations in the sky as there are keys in a piano. What number am I?
-    #A: 88
-    #Which musical instrument will never tell the truth?
-    #A: A lyre
-
-    typing("'To learn more music you must answer me this...'")
-    typing("""I have a scroll but without any quill.)
-    I have ribs and a neck but no legs.
-    I have a saddle but there's no horse.
-    I have a bridge but with no sign of water.""")
+    os.system("clear")
     guesses = 5
-    while guesses > 0:
-        answer =5 input("What am I? >> ").lower()
-        if answer == "a violin" or answer == "violin":
-            typing("'Well done, young warrior.'")
-            typing("The witch disappears in a flash of liquid, smokey gold.")
-            player.music_notes += guesses
-            typing(f"You notice that you have {guesses} new music notes")
-        else:
-            typing("'Not quite, Child.")
-            guesses -= 1
+    decide_riddle = [1, 2, 3]
+    random_decide = random.randint(1,len(decide_riddle))
+    
+    if random_decide == 1:
+        decide_riddle.remove(1)
+        typing(f"{guesses} tries you have, and more music will reveal itself to you")
+        typing("\nI have a scross but without any quill...")
+        typing("\nI have ribs and a neck but no legs...")
+        typing("\nI have a saddle but there's no horse...")
+        typing("\nI have a bridge but with no sign of water.")
+        
+        while guesses > 0:
+            answer = input("\nWhat am I?  >> ").lower()
+            if answer == "a violin" or answer == "violin":
+                typing("'Well done, young warrior.'")
+                typing("The witch disappears in a flash of liquid, smokey gold.")
+                player.music_notes += guesses
+                typing(f"You notice that you have {guesses} new music notes")
+                continue
+            else:
+                typing("'Not quite, Child.")
+                guesses -= 1
+                
+    elif random_decide == 2:
+        decide_riddle.remove(2)
+        typing(f"{guesses} tries you have, and more music will reveal itself to you")
+        typing("\nI am a musical instrument...")
+        typing("\nAnd will never tell the truth...")
+        
+        while guesses > 0:
+            answer = input("What am I?  >> ").lower()
+            if answer == "a lyre" or answer == "lyre":
+                typing("\n'Well done, young warrior.'")
+                typing("\nThe witch disappears in a flash of liquid, smokey gold.")
+                player.music_notes += guesses
+                typing(f"\nYou notice that you have {guesses} new music notes")
+            else:
+                typing("\n'Not quite, Child.")
+                guesses -= 1
             
+                
+    elif random_decide == 3:
+        decide_riddle.remove(3)
+        typing(f"{guesses} tries you have, and more music will reveal itself to you")
+        typing("\nThere as many constellations in the sky...")
+        typing("\nas there are keys on a piano...")
 
+        while guesses > 0:
+            answer = input("What number am I?  >> ")
+            answer = int(answer)
+            if answer == 88:
+                typing("\n'Well done, young warrior.'")
+                typing("\nThe witch disappears in a flash of liquid, smokey gold.")
+                player.music_notes += guesses
+                typing(f"\nYou notice that you have {guesses} new music notes")
+            else:
+                typing("\n'Not quite, Child.")
+                guesses -= 1
+                
+    typing("'Farewell, and good luck'")
 
+#working
+def accept_contract():
+    accept_contract = input("\nDo you want to accept? Yes / No >> ").lower()
+    if accept_contract == "yes" or accept_contract == "y":
+        fight()
+        
+    elif accept_contract == "no" or accept_contract == "n":
+        riddle()
+
+#in progress
+def boss_fight():
+    os.system("afplay boss_music.wav&")
+    if player.music_notes >= 5:
+        boss.lives = 4
+        
+
+#FUNCTION TESTING
 riddle()
-#narrative
+#boss_fight()
 
 #Show Splash Screen
 print("\nSCHERZO")
-print("Collect music notes to save the world from monsters.\n")
-time.sleep(3.5)
+os.system("afplay splash_screen.flac&")
+typing("Collect music notes to save the world from monsters.\n")
+time.sleep(4)
 os.system("clear")
 
 
 #Mainloop
 while True:
-    typing("\nYou awaken in a dark, freezing forest, despite it being the height of summer")
-    typing("\nYour armour is broken, and your weapons are damaged.")
-    typing("\nYou will need to get them repaired, but your money pouches are very light.")
-    typing("\n\nIn the distance, you can hear the sounds of a town waking up.")
+    os.system("afplay music.mp3&")
+    typing("You wake up")
     
     time.sleep(0.5)
     os.system("clear")
     time.sleep(0.5)
     
-    typing("\nYou approach the town, cautiously.")
-    typing("\nThere is a notice on the town board - a monster, terrifying and dark as a winter blizzard.")
-    typing("\nThe reward is 400 coda, enough for repairs to all of your gear, but not a place to rest in safety.")
+    typing("\nyou find the contract")
     
     time.sleep(0.5)
     
-    accept_contract = input("\nDo you want to take the contract? Yes / No >> ").lower()
-    if accept_contract == "yes" or accept_contract == "y":
-        time.sleep(0.5)
-        typing("\nYou accept the contract.")
-        typing("\nYou enter a clearing, and approach the beast.")
-        typing("\n[description of enemy, I'm working on it]")
-        fight()
-    
-    elif accept_contract == "no" or accept_contract == "n":
-        time.sleep(0.5)
-        typing("\nYou decided to leave the contract for someone else, and continue on.")
-        
-        os.system("clear")
-        typing("\nContinuing past the town, you approach a river that should be teaming with life.")
-        typing("\nYou think you are alone, but notice an old woman leaning over the dirty water, further down the bank.") 
-        typing("\nWith deliberatly loud steps, so as not to startle her, you approach.")
-        typing("\nThe old woman looks up at you. Her eyes are black and furious, far too ancient to belong to a mortal human.")
-        typing("\n'Hello, young warrior-' the crashing sounds of thousands of lives and death trickle through her voice. 'I have a game for you.'")
-        time.sleep(0.5)
-        
-        riddle()
-    
-    os.system("clear")
-    typing("The air smells of rotting fish, and the sounds of scavanging birds and angry voices dirty the air.")
-    typing("What should be a peaceful fishing village is overcome with pollution.")
-    typing("As you explore the market, a man dressed in seawares approaches you suddenly.")
-    typing("'I've a pro'osition for ye, Scherzo. Ye kill mo'sters, do ye not?'")
-    typing("'Got some Gillers down in me well. Help me out?'")  
-    
-    #enemy = Enemy(2, 400, "from list", "from list", 3, 1)
-      
-    accept_contract = input("\nDo you want to take the contract? Yes / No >> ").lower()
-    if accept_contract == "yes" or accept_contract == "y":
-        typing("'Aye, thank ye Scherzo. I'll lead ye to the place.'")
-        os.system("clear")
-        typing("You jump into the well, and you can hear the deep sounds of Gillers below the icy waters")
-        typing("Swiftly, you climb onto a small ledge, ready for the attack")
-        fight()
+    accept_contract()
             
+    time.sleep(0.5)
+    os.system("clear")
+    time.sleep(0.5)
+    
+    typing("\nthe man wants you to kill some monsters")
+    
+    time.sleep(0.5)
+    
+    accept_contract()
+
+    time.sleep(0.5)
+    os.system("clear")
+    time.sleep(0.5)
+    
+    typing("\n the boss fight")
+    
+    time.sleep(0.5)
+    
+    boss_fight()
+    
 
