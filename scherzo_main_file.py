@@ -21,23 +21,67 @@ class Character():
         self.money = money
         self.weapon = weapon
         self.armour = armour
+        
+        def set_lives(self, new_lives):
+            self.lives = new_lives
+        
+        def get_lives(self):
+            return self.lives
+            
+        def set_money(self, new_money):
+            self.money = new_money
+        
+        def get_money(self):
+            return self.money
+
+        def set_weapon(self, new_weapon):
+            self.weapon = new_weapon
+        
+        def get_weapon(self):
+            return self.weapon
+        
+        def set_armour(self, new_armour):
+            self.armour = new_armour
+        
+        def get_armour(self):
+            return self.armour
+            
 
 class Player(Character):
     def __init__(self, lives, money, weapon, armour, music_notes, player_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
         self.player_luck = player_luck
+        
+        def set_notes(self, new_notes):
+            self.music_notes = new_notes
+        
+        def get_notes(self):
+            return self.music_notes
+        
+        def set_luck(self, new_luck):
+            self.player_luck = new_luck
+        
+        def get_luck(self):
+            return self.player_luck
 
 class Enemy(Character):
     def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
         Character.__init__(self, lives, money, weapon, armour)
         self.music_notes = music_notes
         self.enemy_luck = enemy_luck
-
-class Boss(Enemy):
-    def __init__(self, lives, money, weapon, armour, music_notes, enemy_luck):
-        Enemy.__init__(self, lives, money, weapon, armour, music_notes, enemy_luck)
-        Character.__init__(self, lives, money, weapon, armour)
+        
+        def set_notes(self, new_notes):
+            self.music_notes = new_notes
+        
+        def get_notes(self):
+            return self.music_notes
+        
+        def set_luck(self, new_luck):
+            self.enemy_luck = new_luck
+        
+        def get_luck(self):
+            return self.enemy_luck
     
 
 class Armour():
@@ -74,7 +118,7 @@ player = Player(3, 221, "from list", "from list", 3, 3)#random.randint(3,20)
 enemy = Enemy(2, 400, "from list", "from list", 3, 2)#random.randint(1,15)
 
 #have one enemy object, change armour, weapon (and therefore lives) in mainloop?
-boss = Boss("from player music notes", 1560, "from list", "from list", 22, 1)
+boss = Enemy(0, 1560, "from list", "from list", 22, 1)
 
 
 
@@ -132,7 +176,7 @@ def lose():
     typing("\nYou did not defeat your enemy")
     typing("\nYou continue on to the next village, hungry and tired. The world grows colder and darker, and there is grey in the skies.")
                     
-#working --- I think that I need to use set/get in my classes to += lives etc.
+#working
 def win():
     typing("\nYou defeated the villain")
     typing("\nYou return to the village, trophy in hand. You approach your employer.")
@@ -140,7 +184,7 @@ def win():
     player.money += enemy.money
     typing("\nYou approach the merchant, who is selling armour and weapons.")
     buy_armour = input("\nDo you want to purchase armour? Yes / No >> ").lower()
-    if buy_armour == "yes" or buy_armour == "y":
+    if buy_armour in ["yes", "y", "yep", "yeah", "please"]:
         os.system("clear")
         for armour in armours:
             print(f"\n{armours.index(armour)+1}) {armour.name}")
@@ -149,8 +193,9 @@ def win():
             print(f"Cost: {armour.cost}")
         armour_index = input(f"\nWhich do you want to purchase? Enter the number (1-{len(armours)}) >> ")
         os.system("afplay select.wav&")
-        armour_index = int(armour_index) - 1
+        armour_index = int(armour_index) -1
         armour = armours[armour_index]
+        #i want to remove armour from list once it is chosen. 
         player.lives += armour.strength
         enemy.money += armour.coda
         player.money -= armour.cost
@@ -160,7 +205,7 @@ def win():
         typing(f"\nYour Coda: {player.money}")
 
     buy_weapon = input("\nDo you want to purchase a weapon? Yes / No >> ").lower()
-    if buy_weapon == "yes" or buy_weapon == "y":
+    if buy_weapon in ["yes", "y", "yep", "yeah", "please"]:
         os.system("clear")
         for weapon in weapons:
             print(f"\n{weapons.index(weapon)+1}) {weapon.name}")
@@ -186,7 +231,7 @@ def win():
     elif buy_weapon == "no" or buy_weapon == "n":
         typing("'No problem'")
 
-#is the random working
+#working
 def riddle():
     os.system("clear")
     guesses = 5
@@ -208,7 +253,8 @@ def riddle():
                 typing("The witch disappears in a flash of liquid, smokey gold.")
                 player.music_notes += guesses
                 typing(f"You notice that you have {guesses} new music notes")
-                continue
+                guesses = 0
+                break
             else:
                 typing("'Not quite, Child.")
                 guesses -= 1
@@ -226,6 +272,8 @@ def riddle():
                 typing("\nThe witch disappears in a flash of liquid, smokey gold.")
                 player.music_notes += guesses
                 typing(f"\nYou notice that you have {guesses} new music notes")
+                guesses = 0
+                break
             else:
                 typing("\n'Not quite, Child.")
                 guesses -= 1
@@ -245,31 +293,40 @@ def riddle():
                 typing("\nThe witch disappears in a flash of liquid, smokey gold.")
                 player.music_notes += guesses
                 typing(f"\nYou notice that you have {guesses} new music notes")
+                guesses = 0
+                break
             else:
                 typing("\n'Not quite, Child.")
                 guesses -= 1
                 
-    typing("'Farewell, and good luck'")
+    typing("\n'Farewell, and good luck'")
 
 #working
 def accept_contract():
     accept_contract = input("\nDo you want to accept? Yes / No >> ").lower()
-    if accept_contract == "yes" or accept_contract == "y":
+    if accept_contract in ["yes", "y", "yep", "yeah", "please"]:
         fight()
         
-    elif accept_contract == "no" or accept_contract == "n":
+    else:
         riddle()
 
 #in progress
 def boss_fight():
     os.system("afplay boss_music.wav&")
     if player.music_notes >= 5:
-        boss.lives = 4
+        boss.lives += 8
+    elif player.music_notes >= 7:
+        boss.lives += 6
+    elif player.music_notes >= 9:
+        boss.lives += 4
+    print(f"boss lives: {boss.lives}")
         
+#i don't think any of my setting of new values is happening and I don't know what to do.
+#My boss fight thingo seems to work though
 
 #FUNCTION TESTING
 riddle()
-#boss_fight()
+boss_fight()
 
 #Show Splash Screen
 print("\nSCHERZO")
