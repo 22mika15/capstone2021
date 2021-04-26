@@ -116,8 +116,7 @@ armours = [light, medium, heavy, dark]
 #Create Instances
 player = Player(3, 221, "from list", "from list", 3, 3)#random.randint(3,20)
 enemy = Enemy(2, 400, "from list", "from list", 3, 2)#random.randint(1,15)
-
-#have one enemy object, change armour, weapon (and therefore lives) in mainloop?
+# the random for luck needs to be set as part of the fight, or else the number won't change
 boss = Enemy(0, 1560, "from list", "from list", 22, 1)
 
 
@@ -200,7 +199,7 @@ def win():
         enemy.money += armour.coda
         player.money -= armour.cost
         os.system("clear")
-        typing(f"\nArmour strength: {armour.strength}")
+        typing(f"\nPlayer Lives: {player.lives}")
         typing(f"\nMoney Bonus: {armour.coda}")
         typing(f"\nYour Coda: {player.money}")
 
@@ -210,21 +209,21 @@ def win():
         for weapon in weapons:
             print(f"\n{weapons.index(weapon)+1}) {weapon.name}")
             print(f"Strength: {weapon.strength}")
-            print(f"Money Bonus: {weapon.music_bonus}")
-            print(f"Coda: {weapon.coda}")
+            print(f"Music Bonus: {weapon.music_bonus}")
+            print(f"Coda Bonus: {weapon.coda}")
             print(f"Cost: {weapon.cost}")
         weapon_index = input(f"\nWhich do you want to purchase? Enter the number (1-{len(weapons)}) >> ")
         os.system("afplay select.wav&")
-        weapon_index = int(weapon_index)
+        weapon_index = int(weapon_index) -1
         weapon = weapons[weapon_index]
         enemy.lives -= weapon.strength
-        enemy.music_notes -= weapon.music_bonus
+        enemy.music_notes += weapon.music_bonus
         enemy.money += weapon.coda
         player.money -= weapon.cost
         os.system("clear")
-        typing(f"\nWeapon strength: {weapon.strength}")
-        typing(f"\nMusic Bonus: {weapon.music_bonus}")
-        typing(f"\nMoney Bonus {weapon.coda}")
+        typing(f"\nEnemy Lives: {enemy.lives}")
+        typing(f"\nMusic Bonus: {enemy.music_notes}")
+        typing(f"\nCoda Bonus: {weapon.coda}")
         typing(f"\nYour Coda: {player.money}")
             
             
@@ -319,25 +318,86 @@ def boss_fight():
         boss.lives += 6
     elif player.music_notes >= 9:
         boss.lives += 4
-    print(f"boss lives: {boss.lives}")
+    
+    while boss.lives > 0 and player.lives >0:
+        os.system("afplay boss_music.wav&")
+        print(f"Enemy lives: {boss.lives}")
+        print(f"Player lives: {player.lives}")
+        print(f"Music Notes: {player.music_notes}")
         
-#i don't think any of my setting of new values is happening and I don't know what to do.
-#My boss fight thingo seems to work though
+        attack_dodge = input("\nAttack or Dodge >> ").lower()
+        if attack_dodge in ["attack", "a"]:
+            if player.player_luck > boss.enemy_luck:
+                boss.lives -= 1
 
+                if enemy.lives == 0:
+                    os.system("afplay win.wav&")
+                    player.money += boss.money
+                    player.music_notes += boss.music_notes
+                    print(player.money)
+                    print(player.music_notes)
+                    time.sleep(3)
+                    os.system("clear")
+                    
+                    typing("\nYou defeated the great evil haunting the lands...")
+                    typing("\nYou feel the warmth seep back into the skies, and the rustling of awakening leaves...")
+                    typing("\nThank you, Warrior, the world is back in tune...")
+                    time.sleep(4)
+                    
+                    
+            elif player.player_luck < enemy.enemy_luck:
+                player.lives -= 1
+                
+                if player.music_notes > 0:
+                    use_music_note = input("\n Use a music note to heal? >> ").lower()
+                    if use_music_note in ["yes", "heal", "y", "h", "use", "please", "yup", "yeah"]:
+                        player.lives += 1
+                        player.music_notes -=1
+                
+                if player.lives == 0:
+                    os.system("clear")
+                    os.system("afplay death.wav&")
+                    typing("\nYou did not succeed...")
+                    typing("\nThe evil begins to seep irreversibly into the world, there is no more you can do...")
+                    typing("\nYou failed, warrior. you failed us all...")
+
+        elif attack_dodge in ["dodge", "d"]:
+            if player.player_luck > enemy.enemy_luck:
+                typing("\nyou dodge the Boss's attack")
+                
+            elif player.player_luck < enemy.enemy_luck:
+                typing("\nyou try to dodge, but the Boss's attack lands")
+                player.music_notes -= 2
+                player.lives -=1
+                
+                if player.lives == 0:
+                    os.system("clear")
+                    os.system("afplay death.wav&")
+                    typing("\nYou did not succeed...")
+                    typing("\nThe evil begins to seep irreversibly into the world, there is no more you can do...")
+                    typing("\nYou failed, warrior. you failed us all...")
+                    return 0
+        
+    
 #FUNCTION TESTING
-riddle()
 boss_fight()
-
-#Show Splash Screen
-print("\nSCHERZO")
-os.system("afplay splash_screen.flac&")
-typing("Collect music notes to save the world from monsters.\n")
-time.sleep(4)
-os.system("clear")
 
 
 #Mainloop
 while True:
+    #Show Splash Screen
+    print("\nSCHERZO")
+    os.system("afplay splash_screen.flac&")
+    typing("Collect music notes to save the world from monsters.\n")
+    begin_game = input("Begin game? >> ").lower()
+    if begin_game in ["yes", "y", "begin", "start", "s", "b", "let's go"]:
+        time.sleep(2)
+        os.system("killall afplay")
+        os.system("clear")
+    else:
+        break
+        
+    #Begin Game
     os.system("afplay music.mp3&")
     typing("You wake up")
     
