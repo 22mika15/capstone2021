@@ -5,8 +5,8 @@ import time
 import random
 os.system("clear")
 
-#WHEN USER CHOOSES THE WEAPON/ARMOUR, REMOVE FROM LIST
-#ADD THE OLD WEAPON/ARMOUR BACK
+#I had some cool story I wanted to add, but didn't have quite enough time to figure out
+#Will try in the future
 
 
 #0.0 for testing, 0.1 for gameplay
@@ -114,14 +114,19 @@ weapons = [sword, spear, axe, mace]
 armours = [light, medium, heavy, dark]
         
 #Create Instances
-player = Player(3, 221, "from list", "from list", 3, 3)#random.randint(3,20)
-enemy = Enemy(2, 400, "from list", "from list", 3, 2)#random.randint(1,15)
-# the random for luck needs to be set as part of the fight, or else the number won't change
-boss = Enemy(0, 1560, "from list", "from list", 22, 1)
+player = Player(3, 221, "from list", "from list", 3, 0)
+enemy = Enemy(2, 400, "from list", "from list", 3, 0)
+boss = Enemy(0, 1560, "from list", "from list", 22, 0)
 
 
 
 #Functions
+
+#doesn't accept a new file? or... something
+def loop_audio(filename):
+    while True:
+        os.system(f"afplay {filename}&")
+        
 #working
 def typing(text):
   words = text
@@ -131,10 +136,17 @@ def typing(text):
 
 #working
 def fight():
+    os.system("killall afplay")
     while enemy.lives > 0 and player.lives > 0:
-        os.system("afplay battle_music.mp3&") 
-        print(f"Enemy lives: {enemy.lives}")
+        os.system("afplay battle_music.mp3&")
+        #loop_audio("battle_music.mp3") 
+        print(f"\nEnemy lives: {enemy.lives}")
         print(f"Player lives: {player.lives}")
+        
+        #set character luck
+        player.player_luck = random.randint(1,10)
+        enemy.enemy_luck = random.randint(1,10)
+        
         attack_dodge = input("\nAttack or Dodge >> ").lower()
         if attack_dodge == "a" or attack_dodge == "attack":
             if player.player_luck > enemy.enemy_luck:
@@ -177,13 +189,17 @@ def lose():
                     
 #working
 def win():
+    os.system("killall afplay")
+    os.system("afplay music.mp3&")
+    #loop_audio("music.mp3")
+    
     typing("\nYou defeated the villain")
     typing("\nYou return to the village, trophy in hand. You approach your employer.")
     typing(f"\nYour employer thanks you, and hands you {enemy.money} coda, and points you towards a merchant.")
     player.money += enemy.money
     typing("\nYou approach the merchant, who is selling armour and weapons.")
     buy_armour = input("\nDo you want to purchase armour? Yes / No >> ").lower()
-    if buy_armour in ["yes", "y", "yep", "yeah", "please"]:
+    if buy_armour in ["yes", "y", "yep", "please", "yeah", "heck yeah"]:
         os.system("clear")
         for armour in armours:
             print(f"\n{armours.index(armour)+1}) {armour.name}")
@@ -204,7 +220,7 @@ def win():
         typing(f"\nYour Coda: {player.money}")
 
     buy_weapon = input("\nDo you want to purchase a weapon? Yes / No >> ").lower()
-    if buy_weapon in ["yes", "y", "yep", "yeah", "please"]:
+    if buy_weapon in ["yes", "y", "yep", "please", "yeah", "heck yeah"]:
         os.system("clear")
         for weapon in weapons:
             print(f"\n{weapons.index(weapon)+1}) {weapon.name}")
@@ -239,7 +255,7 @@ def riddle():
     
     if random_decide == 1:
         decide_riddle.remove(1)
-        typing(f"{guesses} tries you have, and more music will reveal itself to you")
+        typing(f"\n{guesses} tries you have, and more music will reveal itself to you")
         typing("\nI have a scross but without any quill...")
         typing("\nI have ribs and a neck but no legs...")
         typing("\nI have a saddle but there's no horse...")
@@ -248,7 +264,7 @@ def riddle():
         while guesses > 0:
             answer = input("\nWhat am I?  >> ").lower()
             if answer == "a violin" or answer == "violin":
-                typing("'Well done, young warrior.'")
+                typing("\n'Well done, young warrior.'")
                 typing("The witch disappears in a flash of liquid, smokey gold.")
                 player.music_notes += guesses
                 typing(f"You notice that you have {guesses} new music notes")
@@ -260,7 +276,7 @@ def riddle():
                 
     elif random_decide == 2:
         decide_riddle.remove(2)
-        typing(f"{guesses} tries you have, and more music will reveal itself to you")
+        typing(f"\n{guesses} tries you have, and more music will reveal itself to you")
         typing("\nI am a musical instrument...")
         typing("\nAnd will never tell the truth...")
         
@@ -280,7 +296,7 @@ def riddle():
                 
     elif random_decide == 3:
         decide_riddle.remove(3)
-        typing(f"{guesses} tries you have, and more music will reveal itself to you")
+        typing(f"\n{guesses} tries you have, and more music will reveal itself to you")
         typing("\nThere as many constellations in the sky...")
         typing("\nas there are keys on a piano...")
 
@@ -299,31 +315,40 @@ def riddle():
                 guesses -= 1
                 
     typing("\n'Farewell, and good luck'")
+    os.system("clear")
 
 #working
 def accept_contract():
     accept_contract = input("\nDo you want to accept? Yes / No >> ").lower()
     if accept_contract in ["yes", "y", "yep", "yeah", "please"]:
+        typing("\nYou take the notice from the board, and prepare for the fight...")
+        os.system("clear")
         fight()
         
     else:
+        typing("\nYou decided to leave the contract for someone else, and continue on.")
+        os.system("clear")
         riddle()
 
-#in progress
+#working
 def boss_fight():
-    os.system("afplay boss_music.wav&")
+    os.system("killall afplay")
     if player.music_notes >= 5:
-        boss.lives += 8
-    elif player.music_notes >= 7:
         boss.lives += 6
-    elif player.music_notes >= 9:
+    elif player.music_notes >= 7:
         boss.lives += 4
+    elif player.music_notes >= 9:
+        boss.lives += 3
     
     while boss.lives > 0 and player.lives >0:
         os.system("afplay boss_music.wav&")
-        print(f"Enemy lives: {boss.lives}")
+        #loop_audio("boss_music.wav")
+        print(f"\nSliencer lives: {boss.lives}")
         print(f"Player lives: {player.lives}")
         print(f"Music Notes: {player.music_notes}")
+        
+        player.player_luck = random.randint(1,8)
+        boss.enemy_luck = random.randint(4,10)
         
         attack_dodge = input("\nAttack or Dodge >> ").lower()
         if attack_dodge in ["attack", "a"]:
@@ -339,18 +364,18 @@ def boss_fight():
                     time.sleep(3)
                     os.system("clear")
                     
-                    typing("\nYou defeated the great evil haunting the lands...")
+                    typing("\nYou defeated Silencer, the great evil haunting the lands...")
                     typing("\nYou feel the warmth seep back into the skies, and the rustling of awakening leaves...")
                     typing("\nThank you, Warrior, the world is back in tune...")
                     time.sleep(4)
                     
                     
-            elif player.player_luck < enemy.enemy_luck:
+            elif player.player_luck < boss.enemy_luck:
                 player.lives -= 1
                 
                 if player.music_notes > 0:
                     use_music_note = input("\n Use a music note to heal? >> ").lower()
-                    if use_music_note in ["yes", "heal", "y", "h", "use", "please", "yup", "yeah"]:
+                    if use_music_note in ["yes", "heal", "y", "h", "use", "please", "yup", "yeah", "heck yeah"]:
                         player.lives += 1
                         player.music_notes -=1
                 
@@ -363,10 +388,10 @@ def boss_fight():
 
         elif attack_dodge in ["dodge", "d"]:
             if player.player_luck > enemy.enemy_luck:
-                typing("\nyou dodge the Boss's attack")
+                typing("\nyou dodge the Silencer's attack")
                 
             elif player.player_luck < enemy.enemy_luck:
-                typing("\nyou try to dodge, but the Boss's attack lands")
+                typing("\nyou try to dodge, but the Silencer's attack lands")
                 player.music_notes -= 2
                 player.lives -=1
                 
@@ -380,17 +405,21 @@ def boss_fight():
         
     
 #FUNCTION TESTING
-boss_fight()
-
 
 #Mainloop
 while True:
     #Show Splash Screen
-    print("\nSCHERZO")
     os.system("afplay splash_screen.flac&")
-    typing("Collect music notes to save the world from monsters.\n")
+    
+    print("""\n
+████████████████████████████████████████
+█─▄▄▄▄█─▄▄▄─█─█─█▄─▄▄─█▄─▄▄▀█░▄▄░▄█─▄▄─█
+█▄▄▄▄─█─███▀█─▄─██─▄█▀██─▄─▄██▀▄█▀█─██─█
+▀▄▄▄▄▄▀▄▄▄▄▄▀▄▀▄▀▄▄▄▄▄▀▄▄▀▄▄▀▄▄▄▄▄▀▄▄▄▄▀ """)
+
+    typing("\nCollect music notes to save the world from monsters.\n")
     begin_game = input("Begin game? >> ").lower()
-    if begin_game in ["yes", "y", "begin", "start", "s", "b", "let's go"]:
+    if begin_game in ["yes", "y", "begin", "start", "s", "b", "let's go", "begin", "go", "yeah", "heck yeah"]:
         time.sleep(2)
         os.system("killall afplay")
         os.system("clear")
@@ -399,23 +428,36 @@ while True:
         
     #Begin Game
     os.system("afplay music.mp3&")
-    typing("You wake up")
+    #loop_audio("music.mp3")
+    typing("\nYou awaken in a dark, freezing forest, despite it being the height of summer")
+    typing("\nYour armour is broken, and your weapons are damaged.")
+    typing("\nYou will need to get them repaired, but your money pouches are very light.")
+    typing("\n\nIn the distance, you can hear the sounds of a town waking up.")
     
     time.sleep(0.5)
     os.system("clear")
     time.sleep(0.5)
     
-    typing("\nyou find the contract")
+    typing("\nYou approach the town, cautiously.")
+    typing("\nThere is a notice on the town board - a monster, terrifying and dark as a winter blizzard.")
+    typing("\nThe reward is 400 coda, enough for repairs to all of your gear, but not a place to rest in safety.")
     
+    time.sleep(0.5)
+    os.system("clear")
     time.sleep(0.5)
     
     accept_contract()
-            
+
+
     time.sleep(0.5)
     os.system("clear")
     time.sleep(0.5)
     
-    typing("\nthe man wants you to kill some monsters")
+    typing("The air smells of rotting fish, and the sounds of scavanging birds and angry voices dirty the air.")
+    typing("What should be a peaceful fishing village is overcome with pollution.")
+    typing("As you explore the market, a man dressed in seawares approaches you suddenly.")
+    typing("'I've a pro'osition for ye, Scherzo. Ye kill mo'sters, do ye not?'")
+    typing("'Got some Gillers down in me well. Help me out?'") 
     
     time.sleep(0.5)
     
@@ -425,10 +467,14 @@ while True:
     os.system("clear")
     time.sleep(0.5)
     
-    typing("\n the boss fight")
+    typing("\n It is almost too late, the sun has begun to loose any light...")
+    typing("There are no birds singing, no wind whistling...")
+    typing("Nothing...")
+    typing("\n It is time to take on the Silencer...")
     
     time.sleep(0.5)
     
     boss_fight()
     
+    os.system("killall afplay")    
 
