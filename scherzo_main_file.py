@@ -3,10 +3,13 @@
 import os
 import time
 import random
+import threading
 os.system("clear")
 
 #I had some cool story I wanted to add, but didn't have quite enough time to figure out
 #Will try in the future
+
+#some of the sound is overlapping when it shouldn't
 
 
 #0.0 for testing, 0.1 for gameplay
@@ -122,10 +125,9 @@ boss = Enemy(0, 1560, "from list", "from list", 22, 0)
 
 #Functions
 
-#doesn't accept a new file? or... something
-def loop_audio(filename):
-    while True:
-        os.system(f"afplay {filename}&")
+def loop_audio(filename, t):
+    threading.Timer(t, lambda: loop_audio(filename, t)).start()
+    os.system(f"afplay {filename}&")
         
 #working
 def typing(text):
@@ -138,8 +140,7 @@ def typing(text):
 def fight():
     os.system("killall afplay")
     while enemy.lives > 0 and player.lives > 0:
-        os.system("afplay battle_music.mp3&")
-        #loop_audio("battle_music.mp3") 
+        loop_audio("battle_music.mp3", 24.0) 
         print(f"\nEnemy lives: {enemy.lives}")
         print(f"Player lives: {player.lives}")
         
@@ -190,8 +191,7 @@ def lose():
 #working
 def win():
     os.system("killall afplay")
-    os.system("afplay music.mp3&")
-    #loop_audio("music.mp3")
+    loop_audio("music.mp3", 19.0) 
     
     typing("\nYou defeated the villain")
     typing("\nYou return to the village, trophy in hand. You approach your employer.")
@@ -322,11 +322,13 @@ def accept_contract():
     accept_contract = input("\nDo you want to accept? Yes / No >> ").lower()
     if accept_contract in ["yes", "y", "yep", "yeah", "please"]:
         typing("\nYou take the notice from the board, and prepare for the fight...")
+        time.sleep(3)
         os.system("clear")
         fight()
         
     else:
         typing("\nYou decided to leave the contract for someone else, and continue on.")
+        time.sleep(3)
         os.system("clear")
         riddle()
 
@@ -409,7 +411,7 @@ def boss_fight():
 #Mainloop
 while True:
     #Show Splash Screen
-    os.system("afplay splash_screen.flac&")
+    loop_audio("splash_screen.flac", 48.0)
     
     print("""\n
 ████████████████████████████████████████
@@ -427,8 +429,9 @@ while True:
         break
         
     #Begin Game
-    os.system("afplay music.mp3&")
-    #loop_audio("music.mp3")
+    loop_audio("music.mp3", 19.0)
+    
+    
     typing("\nYou awaken in a dark, freezing forest, despite it being the height of summer")
     typing("\nYour armour is broken, and your weapons are damaged.")
     typing("\nYou will need to get them repaired, but your money pouches are very light.")
