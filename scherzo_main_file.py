@@ -6,10 +6,11 @@ import random
 import threading
 os.system("clear")
 
-#I had some cool story I wanted to add, but didn't have quite enough time to figure out
-#Will try in the future
-
-#some of the sound is overlapping when it shouldn't
+#So killall afplay stops all the music from playing BUT
+#the music will stop, the song that is called will then play
+#then all the music that has been previously called will play after the 
+#timer time has passed.
+#hard to tell when delay is 0.0, easier to hear the problem during gameplay
 
 
 #0.0 for testing, 0.1 for gameplay
@@ -117,8 +118,8 @@ weapons = [sword, spear, axe, mace]
 armours = [light, medium, heavy, dark]
         
 #Create Instances
-player = Player(3, 221, "from list", "from list", 3, 0)
-enemy = Enemy(2, 400, "from list", "from list", 3, 0)
+player = Player(3, 221, "from list", "from list", 3, 1)
+enemy = Enemy(2, 250, "from list", "from list", 3, 0)
 boss = Enemy(0, 1560, "from list", "from list", 22, 0)
 
 
@@ -155,6 +156,7 @@ def fight():
 
                 if enemy.lives == 0:
                     os.system("afplay win.wav&")
+                    player.music_notes +=1
                     os.system("clear")
                     win()
                     
@@ -168,7 +170,7 @@ def fight():
                     return 0
 
         elif attack_dodge == "d" or attack_dodge == "dodge":
-            if player.player_luck > enemy.enemy_luck:
+            if player.player_luck >= enemy.enemy_luck:
                 typing("\nyou dodge the monster's attack")
                 
             elif player.player_luck < enemy.enemy_luck:
@@ -198,7 +200,9 @@ def win():
     typing(f"\nYour employer thanks you, and hands you {enemy.money} coda, and points you towards a merchant.")
     player.money += enemy.money
     typing("\nYou approach the merchant, who is selling armour and weapons.")
-    buy_armour = input("\nDo you want to purchase armour? Yes / No >> ").lower()
+    print(f"\nYour coda: {player.money}")
+   
+    buy_armour = input("\n\nDo you want to purchase armour? Yes / No >> ").lower()
     if buy_armour in ["yes", "y", "yep", "please", "yeah", "heck yeah"]:
         os.system("clear")
         for armour in armours:
@@ -206,14 +210,16 @@ def win():
             print(f"Strength: {armour.strength}")
             print(f"Money Bonus: {armour.coda}")
             print(f"Cost: {armour.cost}")
+        
         armour_index = input(f"\nWhich do you want to purchase? Enter the number (1-{len(armours)}) >> ")
+       
         os.system("afplay select.wav&")
         armour_index = int(armour_index) -1
         armour = armours[armour_index]
-        #i want to remove armour from list once it is chosen. 
         player.lives += armour.strength
         enemy.money += armour.coda
         player.money -= armour.cost
+       
         os.system("clear")
         typing(f"\nPlayer Lives: {player.lives}")
         typing(f"\nMoney Bonus: {armour.coda}")
@@ -228,7 +234,9 @@ def win():
             print(f"Music Bonus: {weapon.music_bonus}")
             print(f"Coda Bonus: {weapon.coda}")
             print(f"Cost: {weapon.cost}")
+       
         weapon_index = input(f"\nWhich do you want to purchase? Enter the number (1-{len(weapons)}) >> ")
+        
         os.system("afplay select.wav&")
         weapon_index = int(weapon_index) -1
         weapon = weapons[weapon_index]
@@ -236,6 +244,7 @@ def win():
         enemy.music_notes += weapon.music_bonus
         enemy.money += weapon.coda
         player.money -= weapon.cost
+        
         os.system("clear")
         typing(f"\nEnemy Lives: {enemy.lives}")
         typing(f"\nMusic Bonus: {enemy.music_notes}")
@@ -250,8 +259,13 @@ def win():
 def riddle():
     os.system("clear")
     guesses = 5
-    decide_riddle = [1, 2, 3]
+    decide_riddle = [1, 2, 3, 4]
     random_decide = random.randint(1,len(decide_riddle))
+    
+    typing("\nYou are approached by an ancient figure...")
+    typing("\nYou know they will help you, but there must be a catch...")
+    typing("\nThey speak to you...")
+    os.system("clear")
     
     if random_decide == 1:
         decide_riddle.remove(1)
@@ -314,12 +328,33 @@ def riddle():
                 typing("\n'Not quite, Child.")
                 guesses -= 1
                 
+    elif random_decide == 4:
+        decide_riddle.remove(4)
+        typing(f"\n{guesses} tries you have, and more music will reveal itself to you")
+        typing("\nThough there were nine, we only knew of eight...")
+        typing("\nI did not count us, so only seven remained...")
+        typing("\nWith attributes I wrote a movement for each...")
+
+        while guesses > 0:
+            answer = input("What is my name?  >> ").lower()
+            if answer in ["holst", "gustav theodore holst", "gustav holst"]:
+                typing("\n'Well done, young warrior.'")
+                typing("\nThe witch disappears in a flash of liquid, smokey gold.")
+                player.music_notes += guesses
+                typing(f"\nYou notice that you have {guesses} new music notes")
+                guesses = 0
+                break
+            else:
+                typing("\n'Not quite, Child.")
+                guesses -= 1
+        
+                
     typing("\n'Farewell, and good luck'")
     os.system("clear")
 
 #working
 def accept_contract():
-    accept_contract = input("\nDo you want to accept? Yes / No >> ").lower()
+    accept_contract = input("\nDo you want to fight? Yes / No >> ").lower()
     if accept_contract in ["yes", "y", "yep", "yeah", "please"]:
         typing("\nYou take the notice from the board, and prepare for the fight...")
         time.sleep(3)
@@ -341,16 +376,18 @@ def boss_fight():
         boss.lives += 4
     elif player.music_notes >= 9:
         boss.lives += 3
+    elif player.music_notes < 5:
+        boss.lives += 7
     
-    while boss.lives > 0 and player.lives >0:
+    while boss.lives > 0 and player.lives > 0:
         os.system("afplay boss_music.wav&")
         #loop_audio("boss_music.wav")
         print(f"\nSliencer lives: {boss.lives}")
         print(f"Player lives: {player.lives}")
         print(f"Music Notes: {player.music_notes}")
         
-        player.player_luck = random.randint(1,8)
-        boss.enemy_luck = random.randint(4,10)
+        player.player_luck = random.randint(1,10)
+        boss.enemy_luck = random.randint(2,10)
         
         attack_dodge = input("\nAttack or Dodge >> ").lower()
         if attack_dodge in ["attack", "a"]:
@@ -386,7 +423,7 @@ def boss_fight():
                     os.system("afplay death.wav&")
                     typing("\nYou did not succeed...")
                     typing("\nThe evil begins to seep irreversibly into the world, there is no more you can do...")
-                    typing("\nYou failed, warrior. you failed us all...")
+                    typing("\nYou failed, warrior. You failed us all...")
 
         elif attack_dodge in ["dodge", "d"]:
             if player.player_luck > enemy.enemy_luck:
@@ -405,8 +442,6 @@ def boss_fight():
                     typing("\nYou failed, warrior. you failed us all...")
                     return 0
         
-    
-#FUNCTION TESTING
 
 #Mainloop
 while True:
@@ -419,7 +454,8 @@ while True:
 █▄▄▄▄─█─███▀█─▄─██─▄█▀██─▄─▄██▀▄█▀█─██─█
 ▀▄▄▄▄▄▀▄▄▄▄▄▀▄▀▄▀▄▄▄▄▄▀▄▄▀▄▄▀▄▄▄▄▄▀▄▄▄▄▀ """)
 
-    typing("\nCollect music notes to save the world from monsters.\n")
+    typing("\nFight monsters and solve riddles to save the world from evil.")
+    typing("\nInput your choices, then press enter.\n")
     begin_game = input("Begin game? >> ").lower()
     if begin_game in ["yes", "y", "begin", "start", "s", "b", "let's go", "begin", "go", "yeah", "heck yeah"]:
         time.sleep(2)
@@ -443,7 +479,7 @@ while True:
     
     typing("\nYou approach the town, cautiously.")
     typing("\nThere is a notice on the town board - a monster, terrifying and dark as a winter blizzard.")
-    typing("\nThe reward is 400 coda, enough for repairs to all of your gear, but not a place to rest in safety.")
+    typing("\nThe reward is 250 coda, enough for repairs to all of your gear, but not a place to rest in safety.")
     
     time.sleep(0.5)
     os.system("clear")
@@ -456,28 +492,57 @@ while True:
     os.system("clear")
     time.sleep(0.5)
     
-    typing("The air smells of rotting fish, and the sounds of scavanging birds and angry voices dirty the air.")
-    typing("What should be a peaceful fishing village is overcome with pollution.")
-    typing("As you explore the market, a man dressed in seawares approaches you suddenly.")
-    typing("'I've a pro'osition for ye, Scherzo. Ye kill mo'sters, do ye not?'")
-    typing("'Got some Gillers down in me well. Help me out?'") 
+    typing("\nThe air smells of rotting fish, and the sounds of scavanging birds and angry voices dirty the air.")
+    typing("\nWhat should be a peaceful fishing village is overcome with pollution.")
+    typing("\nAs you explore the market, a man dressed in seawares approaches you suddenly.")
+    typing("\n'I've a pro'osition for ye, Scherzo. Ye kill mo'sters, do ye not?'")
+    typing("\n'Got some Gillers down in me well. Help me out?'") 
+    
+    enemy.lives = 4
+    player.lives = 3
     
     time.sleep(0.5)
+    os.system("clear")
     
     accept_contract()
 
     time.sleep(0.5)
     os.system("clear")
     time.sleep(0.5)
+    
+    enemy.lives = 5
+    player.lives = 5
+    
+    typing("\nArriving in the town, you notice only a handful of houses are not abandoned.") 
+    typing("\nYou can taste the evil in the air, the dripping of grey ice like knives in your ears.")
+    typing("\nThe smell of rotting flesh permeats the air, and your instincts tell you...")  
+    typing("\nThere are monsters around.") 
+   
+    time.sleep(0.5)
+    accept_contract()
+
+    time.sleep(0.5)
+    os.system("clear")
+    time.sleep(0.5)
+
     
     typing("\n It is almost too late, the sun has begun to loose any light...")
-    typing("There are no birds singing, no wind whistling...")
-    typing("Nothing...")
+    typing("\nThere are no birds singing, no wind whistling...")
+    
+    time.sleep(0.5)
+    os.system("clear")
+    
+    typing("\nNothing...")
     typing("\n It is time to take on the Silencer...")
     
     time.sleep(0.5)
+    os.system("clear")
+    
+    if player.lives == 0:
+        player.lives = 3
     
     boss_fight()
     
-    os.system("killall afplay")    
+    os.system("killall afplay")  
+    os.system("clear")  
 
